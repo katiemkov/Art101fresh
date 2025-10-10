@@ -8,3 +8,10 @@ body{
 ol{
     font-family: 'Times New Roman', Times, serif;
 }
+#introduction h2 { font-style: italic;}
+#introduction p { font-size: 120%;}
+
+.navigation {
+display: flex;
+gap: 20px;
+}
