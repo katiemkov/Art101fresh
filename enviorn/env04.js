@@ -24,3 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }catch(err){ console.error('Error creating character boxes:', err); }
 });
 
+// Simple Pet Frog (minimal)
+document.addEventListener('DOMContentLoaded', () => {
+  const frog = document.getElementById('frogwater');
+  if (!frog) return;
+  const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 'Pet Frog';
+  frog.after(btn);
+  btn.onclick = () => {
+    const rib = document.createElement('span'); rib.textContent = ' ribbit'; btn.after(rib);
+    setTimeout(() => rib.remove(), 1500);
+  };
+});
+
