@@ -1,0 +1,9 @@
+/* Simple styles for Letter Jump */
+html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;background:#cdeef9}
+#hud{position:fixed;right:12px;top:12px;background:rgba(255,255,255,0.85);padding:6px 10px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.1);font-weight:700}
+#game{width:880px;height:480px;margin:40px auto;border-radius:8px;background:linear-gradient(#cfefff,#eaf9ff);position:relative;overflow:hidden;border:2px solid rgba(0,0,0,0.06)}
+#player{position:absolute;left:40px;top:360px;width:20px;height:36px;line-height:36px;text-align:center;font-size:32px;font-weight:900;color:#083;user-select:none}
+.platform{position:absolute;background:#6b8e23;height:14px;border-radius:4px}
+.collect{position:absolute;background:#ffd166;color:#2b2b2b;padding:6px 8px;border-radius:6px;font-weight:700;user-select:none}
+/* small responsive tweak */
+@media(max-width:900px){#game{width:96%;margin:20px auto;height:420px}}

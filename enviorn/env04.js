@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }catch(err){ console.error('Error creating character boxes:', err); }
 });
 
-// Simple Pet Frog (minimal)
+// lab 05 stuff
 document.addEventListener('DOMContentLoaded', () => {
   const frog = document.getElementById('frogwater');
   if (!frog) return;
