@@ -1,121 +1,148 @@
-// Minimal platformer: move with ← →, jump with Space, collect letters to increase score
-const G = document.getElementById('game'), P = document.getElementById('player'), SCORE = document.getElementById('score');
-const W = G.clientWidth, H = G.clientHeight;
-let score = 0;
-// player state
-const player = { x:40, y:360, w:20, h:36, vx:0, vy:0, onGround:false };
-const GRAV = 0.8, FRICTION = 0.85, MOVE = 3.2, JUMP = -14;
+// Mini Quest: play as 'L' (Link), fight moblins (M), save the princess (P)
+(function(){
+  var G = document.getElementById('game');
+  var PLY = document.getElementById('player');
+  var HP = document.getElementById('hp');
+  var MOBCOUNT = document.getElementById('mobcount');
+  var message = document.getElementById('message');
 
-// simple level platforms
-const platforms = [
-  {x:0,y:420,w:880},
-  {x:120,y:340,w:180},
-  {x:360,y:280,w:140},
-  {x:560,y:220,w:220},
-  {x:720,y:340,w:120}
-];
+  var keys = {left:false,right:false,up:false,down:false,attack:false};
+  var player = {x:40,y:420,w:36,h:36,vx:0,vy:0, speed:2.6, hp:5, facing:'right'};
+  var enemies = [];
+  var maxEnemies = 4;
+  var princess = null;
+  var playing = true;
 
-// create platform nodes
-platforms.forEach(p => {
-  const d = document.createElement('div'); d.className='platform'; d.style.left = p.x+'px'; d.style.top = p.y+'px'; d.style.width = p.w+'px'; G.appendChild(d);
-});
+  // utility
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  function rect(e){ return {l:e.x, r:e.x+e.w, t:e.y, b:e.y+e.h}; }
+  function intersect(a,b){ return !(b.l>a.r||b.r<a.l||b.t>a.b||b.b<a.t); }
 
-// collectibles: place on some platforms
-let collects = [];
-function randLetter(){ const a = 'abcdefghijklmnopqrstuvwxyz'; let c = a[Math.floor(Math.random()*a.length)]; return c=== 'i' ? 'j' : c; }
+  // spawn princess
+  function spawnPrincess(){
+    var p = document.createElement('div'); p.className='entity princess'; p.textContent='P';
+    p.style.left = '720px'; p.style.top = '60px'; G.appendChild(p);
+    princess = {el:p,x:720,y:60,w:36,h:36};
+  }
 
-function spawnCollects(){
-  // remove old collect nodes
-  collects.forEach(c=>{ try{ c.el.remove(); }catch(e){} }); collects = [];
-  [1,2,3,4].forEach((_,i)=>{
-    const p = platforms[(i+1)%platforms.length];
-    const cEl = document.createElement('div'); cEl.className = 'collect';
-    cEl.textContent = randLetter();
-    const startX = p.x + 20 + i*30;
-    const startY = p.y - 28;
-    cEl.style.left = startX + 'px'; cEl.style.top = startY + 'px'; G.appendChild(cEl);
-    // give each collect a small horizontal patrol range on its platform
-    const minX = p.x + 10;
-    const maxX = p.x + Math.max(40, p.w - 30);
-    const vx = (Math.random() > 0.5 ? 1 : -1) * (0.6 + Math.random()*1.2);
-    collects.push({el: cEl, x: startX, y: startY, vx, minX, maxX});
+  // spawn enemies (moblins)
+  function spawnEnemies(){
+    for(var i=0;i<maxEnemies;i++){
+      var ex = 200 + i*120;
+      var ey = 100 + (i%2)*180;
+      var el = document.createElement('div'); el.className='entity enemy'; el.textContent='M';
+      el.style.left = ex+'px'; el.style.top = ey+'px'; G.appendChild(el);
+      enemies.push({el:el,x:ex,y:ey,w:36,h:36,hp:2,vx:(Math.random()>0.5?0.6:-0.6)});
+    }
+    MOBCOUNT.textContent = enemies.length;
+  }
+
+  // reset game
+  function reset(){
+    // clear enemies/princess
+    enemies.forEach(function(e){ try{e.el.remove();}catch(e){} }); enemies = [];
+    if(princess && princess.el){ try{princess.el.remove();}catch(e){} }
+    princess = null;
+    // reset player
+    player.x = 40; player.y = 420; player.vx = 0; player.vy = 0; player.hp = 5; player.facing = 'right';
+    PLY.style.left = player.x+'px'; PLY.style.top = player.y+'px';
+    HP.textContent = player.hp;
+    // spawn
+    spawnEnemies(); spawnPrincess(); playing = true; message.textContent = 'Defeat moblins and save the princess!';
+  }
+
+  // attack
+  function doAttack(){
+    if(!playing) return;
+    var a = document.createElement('div'); a.className='attack';
+    var ax = player.x + (player.facing==='right'? player.w : -28);
+    var ay = player.y+4;
+    a.style.left = ax+'px'; a.style.top = ay+'px'; G.appendChild(a);
+    setTimeout(function(){ a.remove(); }, 180);
+    // check hit
+    enemies.forEach(function(en){
+      var eRect = rect(en);
+      var aRect = {l:ax, r:ax+28, t:ay, b:ay+28};
+      if(intersect(eRect,aRect)){
+        en.hp -= 1;
+        if(en.hp <= 0){ en.el.remove(); en.dead = true; }
+      }
+    });
+    enemies = enemies.filter(function(e){ return !e.dead; });
+    MOBCOUNT.textContent = enemies.length;
+  }
+
+  // input handlers
+  window.addEventListener('keydown', function(ev){
+    if(ev.code==='ArrowLeft') keys.left = true;
+    if(ev.code==='ArrowRight') keys.right = true;
+    if(ev.code==='ArrowUp') keys.up = true;
+    if(ev.code==='ArrowDown') keys.down = true;
+    if(ev.code==='Space'){ keys.attack = true; ev.preventDefault(); }
+    if(ev.code==='KeyR') reset();
   });
-}
+  window.addEventListener('keyup', function(ev){
+    if(ev.code==='ArrowLeft') keys.left = false;
+    if(ev.code==='ArrowRight') keys.right = false;
+    if(ev.code==='ArrowUp') keys.up = false;
+    if(ev.code==='ArrowDown') keys.down = false;
+    if(ev.code==='Space'){ keys.attack = false; }
+  });
 
-// initial spawn
-spawnCollects();
+  // game loop
+  function update(){
+    if(!playing) return;
+    // movement
+    var mx = 0, my = 0;
+    if(keys.left) { mx = -player.speed; player.facing='left'; }
+    if(keys.right) { mx = player.speed; player.facing='right'; }
+    if(keys.up) { my = -player.speed; }
+    if(keys.down) { my = player.speed; }
+    // normalize diagonal
+    if(mx !==0 && my !==0){ mx *= 0.707; my *= 0.707; }
+    player.x = clamp(player.x + mx, 0, G.clientWidth - player.w);
+    player.y = clamp(player.y + my, 0, G.clientHeight - player.h);
+    PLY.style.left = player.x+'px'; PLY.style.top = player.y+'px';
+    // attack
+    if(keys.attack){ doAttack(); }
 
-// input
-const keys = {left:false,right:false,up:false};
-window.addEventListener('keydown', e=>{
-  if(e.code==='ArrowLeft') keys.left=true;
-  if(e.code==='ArrowRight') keys.right=true;
-  if(e.code==='Space'){ if(player.onGround){ player.vy = JUMP; player.onGround=false; } e.preventDefault(); }
-  if(e.code==='KeyR') { resetGame(); }
-});
-window.addEventListener('keyup', e=>{ if(e.code==='ArrowLeft') keys.left=false; if(e.code==='ArrowRight') keys.right=false; });
+    // enemies AI: patrol and chase if near
+    enemies.forEach(function(en){
+      var dx = player.x - en.x, dy = player.y - en.y;
+      var dist = Math.sqrt(dx*dx + dy*dy);
+      if(dist < 160){ // chase
+        en.vx += (dx>0?0.06:-0.06);
+        en.vx = clamp(en.vx, -1.8, 1.8);
+        en.x += en.vx; en.y += (dy>0?0.4:-0.4);
+      } else {
+        en.x += en.vx;
+        // bounce on edges
+        if(en.x < 0 || en.x > G.clientWidth - en.w){ en.vx *= -1; }
+      }
+      en.el.style.left = Math.round(en.x)+'px'; en.el.style.top = Math.round(en.y)+'px';
+      // collision with player
+      if(intersect(rect(player), rect(en))){
+        // damage player
+        player.hp -= 1; HP.textContent = player.hp; en.hp = 0; en.el.remove(); en.dead = true;
+      }
+    });
+    enemies = enemies.filter(function(e){ return !e.dead; });
+    MOBCOUNT.textContent = enemies.length;
 
-function rect(a){ return {l:a.x, r:a.x+a.w, t:a.y, b:a.y+a.h}; }
-function intersect(r1,r2){ return !(r2.l>r1.r||r2.r<r1.l||r2.t>r1.b||r2.b<r1.t); }
-
-// reset / restart game state
-function resetGame(){
-  // reset player
-  player.x = 40; player.y = 360; player.vx = 0; player.vy = 0; player.onGround = false;
-  P.style.left = player.x + 'px'; P.style.top = player.y + 'px';
-  // reset score
-  score = 0; SCORE.textContent = score;
-  // respawn collectibles
-  spawnCollects();
-}
-
-function update(){
-  // horizontal input
-  if(keys.left) player.vx = Math.max(player.vx - 0.6, -MOVE*1.5);
-  else if(keys.right) player.vx = Math.min(player.vx + 0.6, MOVE*1.5);
-  else player.vx *= FRICTION;
-
-  player.vy += GRAV; // gravity
-  player.x += player.vx; player.y += player.vy;
-
-  // bounds
-  if(player.x < 0){ player.x = 0; player.vx = 0; }
-  if(player.x + player.w > G.clientWidth){ player.x = G.clientWidth - player.w; player.vx = 0; }
-  if(player.y + player.h > G.clientHeight){ player.y = G.clientHeight - player.h; player.vy = 0; player.onGround = true; }
-
-  // platform collision (simple: check when falling)
-  player.onGround = false;
-  const pr = rect(player);
-  platforms.forEach(p=>{
-    const plat = {l:p.x, r:p.x+p.w, t:p.y, b:p.y+14};
-    if(pr.r > plat.l && pr.l < plat.r){
-      // check coming down onto platform
-      if(player.vy >= 0 && pr.b > plat.t && (player.y - player.vy) + player.h <= plat.t + 6){
-        player.y = plat.t - player.h; player.vy = 0; player.onGround = true;
+    // check win (reach princess only if no enemies left)
+    if(princess && enemies.length === 0){
+      if(intersect(rect(player), rect(princess))){
+        // win
+        playing = false;
+        var win = document.createElement('div'); win.className='win'; win.textContent='You saved the princess! 🎉 Press R to play again.'; document.body.appendChild(win);
       }
     }
-  });
+    // check lose
+    if(player.hp <= 0){ playing = false; var lose = document.createElement('div'); lose.className='win'; lose.textContent='You were defeated. Press R to try again.'; document.body.appendChild(lose); }
 
-  // update player element
-  P.style.left = player.x + 'px'; P.style.top = player.y + 'px';
+    requestAnimationFrame(update);
+  }
 
-  // collectibles collision
-  // move collectibles (patrol) and check collision
-  collects.forEach(c => {
-    c.x += c.vx;
-    if(c.x < c.minX || c.x > c.maxX){ c.vx *= -1; c.x = Math.max(c.minX, Math.min(c.x, c.maxX)); }
-    c.el.style.left = c.x + 'px';
-  });
-  collects = collects.filter(c=>{
-    const crect = {l:c.x, r:c.x + c.el.offsetWidth, t:c.y, b:c.y + c.el.offsetHeight};
-    if(intersect(pr, crect)){
-      c.el.remove(); score++; SCORE.textContent = score; return false;
-    }
-    return true;
-  });
-
-  requestAnimationFrame(update);
-}
-
-// start
-requestAnimationFrame(update);
+  // start
+  reset(); requestAnimationFrame(update);
+})();

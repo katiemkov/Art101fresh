@@ -1,9 +1,14 @@
-/* Simple styles for Letter Jump */
-html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;background:#cdeef9}
-#hud{position:fixed;right:12px;top:12px;background:rgba(255,255,255,0.85);padding:6px 10px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.1);font-weight:700}
-#game{width:880px;height:480px;margin:40px auto;border-radius:8px;background:linear-gradient(#cfefff,#eaf9ff);position:relative;overflow:hidden;border:2px solid rgba(0,0,0,0.06)}
-#player{position:absolute;left:40px;top:360px;width:20px;height:36px;line-height:36px;text-align:center;font-size:32px;font-weight:900;color:#083;user-select:none}
-.platform{position:absolute;background:#6b8e23;height:14px;border-radius:4px}
-.collect{position:absolute;background:#ffd166;color:#2b2b2b;padding:6px 8px;border-radius:6px;font-weight:700;user-select:none}
-/* small responsive tweak */
-@media(max-width:900px){#game{width:96%;margin:20px auto;height:420px}}
+/* Simple top-down mini Zelda-like game styles */
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;background:#0b3b2e;color:#fff;margin:0}
+#hud{position:fixed;left:12px;top:12px;background:rgba(0,0,0,0.5);padding:8px 12px;border-radius:8px}
+#hud div{margin:4px 0}
+#message{font-size:13px;opacity:0.9}
+#game{width:800px;height:520px;margin:80px auto 40px;background:linear-gradient(#6dbb8f,#3b8b6a);position:relative;border:4px solid #123;box-shadow:0 8px 20px rgba(0,0,0,0.4);overflow:hidden}
+.entity{position:absolute;width:36px;height:36px;line-height:36px;text-align:center;font-weight:800;border-radius:6px;user-select:none}
+#player{background:#8fd3a6;color:#063;left:40px;top:420px;font-size:22px}
+.enemy{background:#ffd2d2;color:#7a0b0b;font-size:20px}
+.princess{background:#ffe0f0;color:#8a1850;font-size:20px}
+.attack{position:absolute;width:28px;height:28px;border-radius:4px;background:rgba(255,255,255,0.9);opacity:0.95}
+#controls{position:fixed;left:12px;bottom:12px;color:#ddd;font-size:13px}
+.win{position:fixed;left:50%;top:10%;transform:translateX(-50%);background:rgba(255,255,255,0.95);color:#111;padding:12px 18px;border-radius:8px;font-weight:700}

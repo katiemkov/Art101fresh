@@ -1,16 +1,22 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Letter Jump</title>
-    <link rel="stylesheet" href="game.css">
-    <script src="game.js" defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mini Quest — Save the Princess</title>
+  <link rel="stylesheet" href="game.css">
 </head>
 <body>
-    <div id="hud">Score: <span id="score">0</span></div>
-    <div id="game" aria-label="game area">
-        <div id="player" aria-label="player">i</div>
-    </div>
+  <div id="hud">
+    <div id="health">Health: <span id="hp">5</span></div>
+    <div id="enemies">Moblins left: <span id="mobcount">0</span></div>
+    <div id="message">Use arrow keys to move, Space to attack. Defeat all moblins and reach the princess.</div>
+  </div>
+  <div id="game" tabindex="0" aria-label="game area">
+    <div id="player" class="entity">L</div>
+    <!-- enemies and princess will be added by JS -->
+  </div>
+  <div id="controls">Press R to restart</div>
+  <script src="game.js" defer></script>
 </body>
 </html>
