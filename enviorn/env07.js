@@ -24,14 +24,27 @@ document.addEventListener('DOMContentLoaded', () => {
   }catch(err){ console.error('Error creating character boxes:', err); }
 });
 
-// Simple Pet Frog (minimal)
+// lab 05 stuff
 document.addEventListener('DOMContentLoaded', () => {
   const frog = document.getElementById('frogwater');
   if (!frog) return;
   const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 'Pet Frog';
   frog.after(btn);
   btn.onclick = () => {
-    const rib = document.createElement('span'); rib.textContent = ' ribbit'; btn.after(rib);
+    const rib = document.createElement('span');
+    rib.textContent = ' ribbit';
+    rib.style.position = 'relative';
+    rib.style.display = 'inline-block';
+    rib.style.padding = '2px 6px';
+    btn.after(rib);
+
+    if (window.jQuery) {
+      $(rib)
+        .animate({ top: '-20px' }, 150)
+        .animate({ top: '0px' }, 150)
+        .animate({ top: '-10px' }, 120)
+        .animate({ top: '0px' }, 120);
+    }
     setTimeout(() => rib.remove(), 1500);
   };
 });
