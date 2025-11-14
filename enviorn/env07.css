@@ -1,0 +1,30 @@
+body {
+    background-image:url(waterpour.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+h1{
+    margin: 50px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+p{
+background-color: aqua;
+margin: 50px;
+padding: 20;
+font-size: 20px;
+}
+
+img{
+    height:300px;
+}
+
+.navigation {
+display: flex;
+gap: 20px;
+
+}
+
+#waterdrop{
+    width: 200px; 
+    height: auto;
+}
