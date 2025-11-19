@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }catch(err){ console.error('Error creating character boxes:', err); }
 });
 
-// lab 05 stuff
 document.addEventListener('DOMContentLoaded', () => {
   const frog = document.getElementById('frogwater');
   if (!frog) return;
@@ -49,11 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 });
 
-// lab 08 stuff - blue circle follows mouse
 const circle = $('<div>').css({
   position: 'fixed',
-  width: '30px',
-  height: '30px',
+  width: '25px',
+  height: '25px',
   background: 'blue',
   borderRadius: '50%'
 }).appendTo('body');
