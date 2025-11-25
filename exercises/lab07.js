@@ -1,11 +1,9 @@
-$(".nice-block span").click(function () {
+$(".nice-block span").on("click", function () {
+    var $btn = $(this);
+    var $parent = $btn.parent();
 
-    $(this).parent().toggleClass("more");
+    $parent.toggleClass("more");
 
-    if ($(this).html() == "more") {
-        $(this).html("less");
-    } else {
-        $(this).html("more");
-    }
-
+    var isMore = $parent.hasClass("more");
+    $btn.text(isMore ? "less" : "more");
 });
